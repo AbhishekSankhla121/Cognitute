@@ -1,0 +1,5 @@
+README.md
+**/dockerfile
+**/*.yml
+.devcontainer
+public

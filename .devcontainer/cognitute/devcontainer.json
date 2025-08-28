@@ -1,0 +1,33 @@
+{
+    "name": "Cognitute Application",
+    "dockerComposeFile": "./compose.yaml",
+    "service": "cognitute-application",
+    "workspaceFolder": "/workspace/application",
+    "shutdownAction": "none",
+    "forwardPorts": [
+        3000,
+        5432,
+        5050
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "wix.vscode-import-cost",
+                "meganrogge.template-string-converter",
+                "esbenp.prettier-vscode",
+                "xabikos.javascriptsnippet",
+                "postman.postman-for-vscode",
+                "dbaeumer.vscode-eslint",
+                "csstools.postcss",
+                "ms-azuretools.vscode-docker",
+                "rvest.vs-code-prettier-eslint",
+                "bradlc.vscode-tailwindcss",
+                "graphql.vscode-graphql",
+                "styled-components.vscode-styled-components",
+                "prisma.prisma",
+                "eamodio.gitlens"
+            ]
+        }
+    },
+    "remoteUser": "node"
+}
