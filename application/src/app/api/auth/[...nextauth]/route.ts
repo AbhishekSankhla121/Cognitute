@@ -29,7 +29,9 @@ const authOption: NextAuthOptions = {
         },
         create: {
           email: profile.email,
+          image:profile.image,
           name: profile.name,
+          emailVerified: new Date(),
         },
         update: {
           name: profile.name,
