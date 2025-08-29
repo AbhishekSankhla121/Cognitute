@@ -33,6 +33,8 @@ const authOption: NextAuthOptions = {
         },
         update: {
           name: profile.name,
+          image:profile.image,
+          emailVerified: new Date(),
         },
       })
       return true
