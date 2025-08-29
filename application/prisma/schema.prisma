@@ -1,0 +1,114 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String     @id @default(uuid())
+  name          String?
+  email         String?    @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role       @default(ReadOnly)
+  workspace     Workspace? @relation(fields: [workspaceId], references: [id])
+  workspaceId   String?
+  accounts      Account[]
+  sessions      Session[]
+  auditLogs     AuditLog[]
+}
+
+enum Role {
+  Admin
+  ReadOnly
+}
+
+model Account {
+  id                String  @id @default(uuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  access_token      String?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  user              User    @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Workspace {
+  id    String @id @default(uuid())
+  name  String
+  users User[]
+  flags Flag[]
+}
+
+model Flag {
+  id           String     @id @default(uuid())
+  key          String
+  defaultValue Boolean
+  isEnabled    Boolean    @default(true)
+  workspace    Workspace  @relation(fields: [workspaceId], references: [id])
+  workspaceId  String
+  rules        FlagRule[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  AuditLog     AuditLog[]
+
+  @@unique([key, workspaceId])
+}
+
+model FlagRule {
+  id             String     @id @default(uuid())
+  flag           Flag       @relation(fields: [flagId], references: [id])
+  flagId         String
+  order          Int
+  attribute      String
+  comparator     Comparator
+  value          Json
+  rolloutPercent Int?
+}
+
+enum Comparator {
+  EQ
+  IN
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  action    String
+  flag      Flag?    @relation(fields: [flagId], references: [id])
+  flagId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  userId    String?
+  meta      Json?
+  createdAt DateTime @default(now())
+}
