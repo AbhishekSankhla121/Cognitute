@@ -9,7 +9,7 @@ async function main() {
   await prisma.user.createMany({
     data: [
       { email: 'abhisheksankhla121@gmail.com', name: 'Admin', role: 'Admin', workspaceId: ws.id },
-      { email: 'abhisheksankhlasigh@gmail.com', name: 'Viewer', role: 'ReadOnly', workspaceId: ws.id },
+      { email: 'abhisheksankhlasigh0852@gmail.com', name: 'Viewer', role: 'ReadOnly', workspaceId: ws.id },
     ],
   });
 
