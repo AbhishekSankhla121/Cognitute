@@ -40,7 +40,6 @@ async function main() {
     },
   });
 
-  // add 2 more flags similarly...
 }
 
 main()

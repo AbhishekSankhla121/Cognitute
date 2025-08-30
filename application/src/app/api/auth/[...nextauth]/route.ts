@@ -7,7 +7,7 @@ import GoogleProvider from 'next-auth/providers/google'
 const GOOGLE_CLIENT_ID = process.env.GOOOGLE_CLIENT_ID!
 const GOOGLE_CLIENT_SECRET = process.env.GOOOGLE_CLIENT_SECRET!
 
-const authOption: NextAuthOptions = {
+export const authOption: NextAuthOptions = {
   session: {
     strategy: 'jwt',
   },
