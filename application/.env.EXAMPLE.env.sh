@@ -1,0 +1,19 @@
+# Environment variables declared in this file are automatically made available to Prisma.
+# See the documentation for more detail: https://pris.ly/d/prisma-schema#accessing-environment-variables-from-the-schema
+
+# Prisma supports the native connection string format for PostgreSQL, MySQL, SQLite, SQL Server, MongoDB and CockroachDB.
+# See the documentation for all the connection string options: https://pris.ly/d/connection-strings
+
+# The following `prisma+postgres` URL is similar to the URL produced by running a local Prisma Postgres 
+# server with the `prisma dev` CLI command, when not choosing any non-default ports or settings. The API key, unlike the 
+# one found in a remote Prisma Postgres URL, does not contain any sensitive information.
+
+DATABASE_URL="postgres://postgres:postgres@db:5432/dev?schema=public"
+POSTGRES_CONNECTION_STRING="postgres://postgres:postgres@db:5432/postgres"
+REDIS_URL="redis://redis:6379"
+GOOOGLE_CLIENT_ID="720872860129-8osptkbcho46k5am1p9cppfa21eodgt5.apps.googleusercontent.com"
+GOOOGLE_CLIENT_SECRET="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"
+NEXTAUTH_URL="http://localhost:3000/"
+NEXTAUTH_SECRET="secret"
+HOSTNAME='localhost'
+PORT="3000"
