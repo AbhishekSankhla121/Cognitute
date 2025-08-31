@@ -5,11 +5,12 @@ async function main() {
   const ws = await prisma.workspace.create({
     data: { name: 'Acme Workspace' },
   });
-
+// here u need to add your google account email
+//  make sure those email exsit
   await prisma.user.createMany({
     data: [
       { email: 'abhisheksankhla121@gmail.com', name: 'Admin', role: 'Admin', workspaceId: ws.id },
-      { email: 'abhisheksankhlasigh0852@gmail.com', name: 'Viewer', role: 'ReadOnly', workspaceId: ws.id },
+      { email: 'abhisheksankhlasingh0852@gmail.com', name: 'Viewer', role: 'ReadOnly', workspaceId: ws.id },
     ],
   });
 
