@@ -7,6 +7,8 @@ export default async function Home() {
 
   if (!user) {
     redirect("/api/auth/signin");
+  }else{
+    redirect("/dashboard/flags");
   }
 
   return <>{JSON.stringify(user)}</>;
