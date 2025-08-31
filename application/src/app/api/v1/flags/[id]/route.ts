@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../../../lib/prisma";
-// import redis from "../../../../../../lib/redis";
+import redis from "../../../../../../lib/redis";
 import {broadcastFlagUpdate} from "../../../../../../lib/ws-brodcast"
 
 // Assume you have a singleton WS server or pub/sub channel somewhere
@@ -116,12 +116,12 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
   
 
 
-// await redis.set(
-//   `flag:${updatedFlag.workspaceId}:${updatedFlag.key}`,
-//   JSON.stringify(updatedFlag),
-//   "EX", // string, not object
-//   60    // TTL in seconds
-// );
+await redis.set(
+  `flag:${updatedFlag.workspaceId}:${updatedFlag.key}`,
+  JSON.stringify(updatedFlag),
+  "EX", // string, not object
+  60    // TTL in seconds
+);
 
 
 

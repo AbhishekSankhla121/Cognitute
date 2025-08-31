@@ -20,7 +20,7 @@ app.prepare().then(() => {
       origin: dev
         ? ["http://localhost:3000", "http://127.0.0.1:3000"]
         : process.env.NEXT_PUBLIC_APP_URL,
-      methods: ["GET", "POST", "PATCH"],
+      methods: ["GET", "POST", "PATCH","DELETE","UPDATE"],
       credentials: true,
     },
     path: "/api/socketio/",
