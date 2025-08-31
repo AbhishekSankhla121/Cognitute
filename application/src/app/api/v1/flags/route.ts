@@ -110,7 +110,6 @@ export async function POST(req: NextRequest) {
     await redis.set(userKey, JSON.stringify(currentUser), "EX", 60);
   }
 
-  if(!currentUser.access) return NextResponse.json({ error: "Admin require" }, { status: 400 });
 
     const body = await req.json();
 

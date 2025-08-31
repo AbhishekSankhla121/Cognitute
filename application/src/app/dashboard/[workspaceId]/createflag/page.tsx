@@ -64,13 +64,12 @@ const handleAddRule = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(flag),
       });
-      if (!res.ok) throw new Error("Failed to create flag");
       const data = await res.json();
       console.log("Flag created:", data);
       router.push(`/dashboard/flags`); 
     } catch (err) {
       console.error(err);
-      alert("Failed to create flag");
+      alert(err.error);
     }
   };
 

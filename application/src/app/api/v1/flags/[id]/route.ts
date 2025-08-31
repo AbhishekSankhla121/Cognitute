@@ -9,7 +9,7 @@ import {broadcastFlagUpdate} from "../../../../../../lib/ws-brodcast"
 
 // GET /api/v1/flags/:id
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
-  const { id } = params;
+  const { id } = await params;
   const flag = await prisma.flag.findUnique({
     where: { id },
     include: { rules: true },
@@ -127,5 +127,80 @@ await redis.set(
 
 
 await broadcastFlagUpdate(updatedFlag);
+  return NextResponse.json(updatedFlag);
+}
+
+
+
+export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = params;
+  const body = await req.json();
+
+  // Get existing flag
+  const existingFlag = await prisma.flag.findUnique({
+    where: { id },
+    include: { rules: true },
+  });
+
+  if (!existingFlag) return NextResponse.json({ error: "Flag not found" }, { status: 404 });
+
+  // Prepare flag update
+  const updateData: any = {};
+  if (body.key !== undefined) updateData.key = body.key;
+  if (body.defaultValue !== undefined) updateData.defaultValue = body.defaultValue;
+  if (body.isEnabled !== undefined) updateData.isEnabled = body.isEnabled;
+
+  // Prepare rules update
+  const rulesUpdate = body.rules?.map((r: any) => {
+    if (r.id) {
+      // Update existing rule
+      return {
+        where: { id: r.id },
+        data: {
+          order: r.order,
+          attribute: r.attribute,
+          comparator: r.comparator,
+          value: r.value,
+          rolloutPercent: r.rolloutPercent,
+        },
+      };
+    } else {
+      // Create new rule
+      return {
+        create: {
+          order: r.order,
+          attribute: r.attribute,
+          comparator: r.comparator,
+          value: r.value,
+          rolloutPercent: r.rolloutPercent,
+        },
+      };
+    }
+  });
+
+  // Update flag and rules
+  const updatedFlag = await prisma.flag.update({
+    where: { id },
+    data: {
+      ...updateData,
+      rules: rulesUpdate ? { 
+        update: rulesUpdate.filter((u: any) => 'where' in u),
+        create: rulesUpdate.filter((u: any) => 'create' in u).map((u: { create: any; }) => u.create),
+      } : undefined,
+    },
+    include: { rules: true, workspace: { select: { id: true, name: true } } },
+  });
+
+  // Update cache
+  await redis.set(
+    `flag:${updatedFlag.workspaceId}:${updatedFlag.key}`,
+    JSON.stringify(updatedFlag),
+    "EX",
+    60
+  );
+await redis.del(`flag:${updatedFlag.workspaceId}`);
+  // Broadcast update
+  await broadcastFlagUpdate(updatedFlag);
+
   return NextResponse.json(updatedFlag);
 }

@@ -299,6 +299,9 @@ onClick={()=>{
               {access==="Admin" && <>
               <input type="button" value={`${flag.defaultValue}`} onClick={(e)=> {changeDefaultValue(e,flag.defaultValue,flag.id)}} />
               </>}
+              {access==="Admin" && <>
+              <input type="button" value={`edit`} onClick={(e)=> {router.push(`/dashboard/${flag.id}/editflag`)}} />
+              </>}
           
          
 
