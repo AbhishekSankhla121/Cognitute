@@ -52,6 +52,5 @@ app.prepare().then(() => {
   server.listen(port, (err) => {
     if (err) throw err;
     console.log(`Server ready on http://localhost:${port}`);
-    console.log(`Socket.io listening on /api/socketio/`);
   });
 });
