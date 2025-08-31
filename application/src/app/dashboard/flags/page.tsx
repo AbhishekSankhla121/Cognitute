@@ -68,7 +68,26 @@ async function changeDefaultValue(e: any, defaultValue: boolean,flagID:string){
 
   // update UI state here
 });
-
+  const handleEvaluate = async (flagKey: string,
+          unitId: string,
+          attributes: string | Rule[]) => {
+    try {
+      const res = await fetch("/api/v1/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+        flagKey,
+        unitId,
+        attributes
+      }),
+      });
+      const data = await res.json();
+      console.log(data)
+    } catch (err) {
+      console.error(err);
+      
+    }
+  };
 async function handledeletingFlag(flagid:string){
   try {
     const res = await fetch(`/api/v1/flags/${flagid}`, {
@@ -316,10 +335,16 @@ onClick={()=>{
               {access==="Admin" && <>
               <input type="button" value={`${flag.defaultValue}`} onClick={(e)=> {changeDefaultValue(e,flag.defaultValue,flag.id)}} />
               </>}
-              
-              <input type="button" value={`edit`} onClick={(e)=> {router.push(`/dashboard/${flag.id}/editflag`)}} />
+             
+              <input type="button" value={`edit`} onClick={(e)=> {router.push(`/dashboard/${flag.id}/editflag`)}} /> 
+               {access==="Admin" && <>
               <input type="button" value={`delete`} onClick={(e)=> handledeletingFlag(flag.id)} />
               
+          </>}
+              
+              <input type="button" value={`evaluate`} onClick={(e)=> handleEvaluate(flag.key,flag.id,flag.rules)} />
+              
+      
           
          
 

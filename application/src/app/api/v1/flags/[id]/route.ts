@@ -5,10 +5,6 @@ import redis from "../../../../../../lib/redis";
 import {broadcastFlagUpdate, broadcastType} from "../../../../../../lib/ws-brodcast"
 import { getUserSession } from "../../../../../../lib/auth";
 
-// Assume you have a singleton WS server or pub/sub channel somewhere
-
-
-// GET /api/v1/flags/:id
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
    const user = await getUserSession();
       if (!user.id) {
@@ -55,7 +51,7 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
           where: {
             key: body.key,
             workspaceId: existingFlag.workspaceId,
-            id: { not: id } // Exclude current flag
+            id: { not: id }
           }
         });
 
@@ -139,8 +135,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 await redis.set(
   `flag:${updatedFlag.workspaceId}:${updatedFlag.key}`,
   JSON.stringify(updatedFlag),
-  "EX", // string, not object
-  60    // TTL in seconds
+  "EX", 
+  60   
 );
 
 
@@ -161,7 +157,6 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
   const { id } = params;
   const body = await req.json();
 
-  // Get existing flag
   const existingFlag = await prisma.flag.findUnique({
     where: { id },
     include: { rules: true },
@@ -169,16 +164,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
   if (!existingFlag) return NextResponse.json({ error: "Flag not found" }, { status: 404 });
 
-  // Prepare flag update
+
   const updateData: any = {};
   if (body.key !== undefined) updateData.key = body.key;
   if (body.defaultValue !== undefined) updateData.defaultValue = body.defaultValue;
   if (body.isEnabled !== undefined) updateData.isEnabled = body.isEnabled;
 
-  // Prepare rules update
+ 
   const rulesUpdate = body.rules?.map((r: any) => {
     if (r.id) {
-      // Update existing rule
+    
       return {
         where: { id: r.id },
         data: {
@@ -203,7 +198,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     }
   });
 
-  // Update flag and rules
+  
   const updatedFlag = await prisma.flag.update({
     where: { id },
     data: {
