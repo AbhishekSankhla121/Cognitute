@@ -69,7 +69,7 @@ const handleAddRule = () => {
       router.push(`/dashboard/flags`); 
     } catch (err) {
       console.error(err);
-      alert(err.error);
+      alert("error occur while creating flag due to same key");
     }
   };
 
