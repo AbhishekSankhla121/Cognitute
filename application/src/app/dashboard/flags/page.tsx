@@ -68,6 +68,16 @@ async function changeDefaultValue(e: any, defaultValue: boolean,flagID:string){
 
   // update UI state here
 });
+
+async function handledeletingFlag(flagid:string){
+  try {
+    const res = await fetch(`/api/v1/flags/${flagid}`, {
+      method: "DELETE",
+    });
+  } catch (error) {
+    console.log(error)
+  }
+}
   
   useEffect(() => {
     async function fetchFlags() {
@@ -119,6 +129,13 @@ async function changeDefaultValue(e: any, defaultValue: boolean,flagID:string){
     return [...prevFlags, data];
   }
 });
+  
+});
+
+  newSocket.on('type-event', (data) => {
+      console.log(data)
+    setFlags((prevFlags) => prevFlags.filter((flag) => flag.id !== data.id));
+
 
 console.log("flag:",flags)
 console.log("data:",data)
@@ -299,9 +316,10 @@ onClick={()=>{
               {access==="Admin" && <>
               <input type="button" value={`${flag.defaultValue}`} onClick={(e)=> {changeDefaultValue(e,flag.defaultValue,flag.id)}} />
               </>}
-              {access==="Admin" && <>
+              
               <input type="button" value={`edit`} onClick={(e)=> {router.push(`/dashboard/${flag.id}/editflag`)}} />
-              </>}
+              <input type="button" value={`delete`} onClick={(e)=> handledeletingFlag(flag.id)} />
+              
           
          
 

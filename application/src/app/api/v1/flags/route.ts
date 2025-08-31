@@ -141,6 +141,17 @@ export async function POST(req: NextRequest) {
       },
       include: { rules: true },
     });
+   
+     await prisma.auditLog.create({
+    data: {
+      action: "POST_FLAG",
+      flagId: flag.id,
+      userId: user.id,
+      meta: {
+        updatedFields: body,
+      },
+    },
+  });
     await broadcastFlagUpdate(flag);
     await redis.del(`flag:${workspaceId}`);
     return NextResponse.json(flag, { status: 201 });
@@ -150,3 +161,5 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
+
+

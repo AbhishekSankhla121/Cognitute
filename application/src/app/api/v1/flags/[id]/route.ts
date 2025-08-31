@@ -2,13 +2,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "../../../../../../lib/prisma";
 import redis from "../../../../../../lib/redis";
-import {broadcastFlagUpdate} from "../../../../../../lib/ws-brodcast"
+import {broadcastFlagUpdate, broadcastType} from "../../../../../../lib/ws-brodcast"
+import { getUserSession } from "../../../../../../lib/auth";
 
 // Assume you have a singleton WS server or pub/sub channel somewhere
 
 
 // GET /api/v1/flags/:id
 export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+   const user = await getUserSession();
+      if (!user.id) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
+  
   const { id } = await params;
   const flag = await prisma.flag.findUnique({
     where: { id },
@@ -21,6 +27,11 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 
 // PUT /api/v1/flags/:id
 export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+   const user = await getUserSession();
+    if (!user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
   const { id } = await params;
   const body = await req.json();
 
@@ -114,7 +125,16 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
       }
     });
   
-
+     await prisma.auditLog.create({
+    data: {
+      action: "PATCH_FLAG",
+      flagId: updatedFlag.id,
+      userId: user.id,
+      meta: {
+        updatedFields: body,
+      },
+    },
+  });
 
 await redis.set(
   `flag:${updatedFlag.workspaceId}:${updatedFlag.key}`,
@@ -133,6 +153,11 @@ await broadcastFlagUpdate(updatedFlag);
 
 
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+   const user = await getUserSession();
+    if (!user.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
   const { id } = params;
   const body = await req.json();
 
@@ -190,7 +215,16 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     },
     include: { rules: true, workspace: { select: { id: true, name: true } } },
   });
-
+ await prisma.auditLog.create({
+    data: {
+      action: "PUT_FLAG",
+      flagId: updatedFlag.id,
+      userId: user.id,
+      meta: {
+        updatedFields: body,
+      },
+    },
+  });
   // Update cache
   await redis.set(
     `flag:${updatedFlag.workspaceId}:${updatedFlag.key}`,
@@ -203,4 +237,84 @@ await redis.del(`flag:${updatedFlag.workspaceId}`);
   await broadcastFlagUpdate(updatedFlag);
 
   return NextResponse.json(updatedFlag);
+}
+
+
+export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+  const { id } = await params;
+
+  // ✅ Get current user session
+  const user = await getUserSession();
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+   const userKey = `Currentuser:${user.id}`; 
+     let currentUser = null;
+  const usercached = await redis.get(userKey);
+
+    if (usercached) {
+    try {
+      currentUser = JSON.parse(usercached);
+    } catch {
+      await redis.del(userKey); 
+    }
+  }
+
+  if (!currentUser) {
+    const userdata = await prisma.user.findUnique({
+      where: { id: user.id },
+      select: { id: true, workspaceId: true, role: true }, // only needed fields
+    });
+
+    if (!userdata) {
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    if (!userdata.workspaceId) {
+      return NextResponse.json({ error: "No workspace" }, { status: 400 });
+    }
+
+    currentUser = userdata;
+
+    await redis.set(userKey, JSON.stringify(currentUser), "EX", 60);
+  }
+
+  
+  const existingFlag = await prisma.flag.findUnique({
+    where: { id },
+    include: { rules: true },
+  });
+
+  if (!existingFlag) {
+    return NextResponse.json({ error: "Flag not found" }, { status: 404 });
+  }
+  if (existingFlag.workspaceId !== currentUser.workspaceId) {
+    return NextResponse.json({ error: "You are not authorized to delete this flag" }, { status: 403 });
+  }
+
+  try {
+    await prisma.flagRule.deleteMany({
+      where: { flagId: id },
+    });
+
+   const res= await prisma.flag.delete({
+      where: { id },
+    });
+     await prisma.auditLog.create({
+    data: {
+      action: "POST_FLAG",
+      flagId: id,
+      userId:currentUser.id,
+      meta: {
+        updatedFields: res,
+      },
+    },
+  });
+    await broadcastType(res.id,"delete");
+    await redis.del(`flag:${existingFlag.workspaceId}:${existingFlag.key}`);
+
+    return NextResponse.json({ message: "Flag deleted successfully" });
+  } catch (err) {
+    console.error("Error deleting flag:", err);
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+  }
 }

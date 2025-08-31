@@ -12,3 +12,15 @@ export const broadcastFlagUpdate = (flag: { rules: { id: string; flagId: string;
   global.io.to(`workspace:${workspaceId}`).emit("flag-updated", flag);
   console.log(`📤 Broadcasted flag update to workspace:${workspaceId}`);
 };
+
+
+export const broadcastType = (id: string, type: string) => {
+  if (!global.io) {
+    console.warn("⚠️ Socket.io not initialized");
+    return;
+  }
+
+  // Example: broadcast event to all connected clients
+  global.io.emit("type-event", { id, type });
+  console.log(`📤 Broadcasted type event with id: ${id} and type: ${type}`);
+};

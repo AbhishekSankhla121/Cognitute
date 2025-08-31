@@ -27,7 +27,8 @@
                 "graphql.vscode-graphql",
                 "styled-components.vscode-styled-components",
                 "prisma.prisma",
-                "eamodio.gitlens"
+                "eamodio.gitlens",
+                "cweijan.vscode-redis-client"
             ]
         }
     },
