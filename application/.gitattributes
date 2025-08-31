@@ -1,0 +1,4 @@
+*.sh text eol=lf
+
+**/src/proto/** gitlab-generated
+protos/generated/** gitlab-generated
