@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-
+import { signOut } from "next-auth/react";
 const Navbar = () => {
   // Navbar container style
   const navbarStyle = {
@@ -59,7 +59,10 @@ const Navbar = () => {
   target.style.boxShadow = "0 6px 12px rgba(0,0,0,0.2)";
   };
   
-
+ const handleLogout = async () => {
+    // Sign out the user and redirect to homepage
+    await signOut({ callbackUrl: "/" });
+  };
 return (
   <nav style={navbarStyle}>
     <div style={logoStyle}>🌸 MyApp</div>
@@ -79,6 +82,17 @@ return (
           </a>
         </li>
       ))}
+      <li>
+         <a
+            href={"/"}
+            style={linkStyle}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            onClick={()=>{handleLogout()}}
+          >
+            {"logut"}
+          </a>
+      </li>
     </ul>
   </nav>
 

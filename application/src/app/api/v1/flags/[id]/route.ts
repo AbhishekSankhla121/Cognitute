@@ -291,20 +291,7 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
       where: { flagId: id },
     });
 
-   const res= await prisma.flag.delete({
-      where: { id },
-    });
-     await prisma.auditLog.create({
-    data: {
-      action: "POST_FLAG",
-      flagId: id,
-      userId:currentUser.id,
-      meta: {
-        updatedFields: res,
-      },
-    },
-  });
-    await broadcastType(res.id,"delete");
+    await broadcastType(id,"delete");
     await redis.del(`flag:${existingFlag.workspaceId}:${existingFlag.key}`);
 
     return NextResponse.json({ message: "Flag deleted successfully" });

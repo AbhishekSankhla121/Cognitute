@@ -332,18 +332,119 @@ onClick={()=>{
             <p style={{ margin: 0 }}>Updated: {new Date(flag.updatedAt).toLocaleString()}</p>
           </div>
           
-              {access==="Admin" && <>
-              <input type="button" value={`${flag.defaultValue}`} onClick={(e)=> {changeDefaultValue(e,flag.defaultValue,flag.id)}} />
-              </>}
-             
-              <input type="button" value={`edit`} onClick={(e)=> {router.push(`/dashboard/${flag.id}/editflag`)}} /> 
-               {access==="Admin" && <>
-              <input type="button" value={`delete`} onClick={(e)=> handledeletingFlag(flag.id)} />
-              
-          </>}
-              
-              <input type="button" value={`evaluate`} onClick={(e)=> handleEvaluate(flag.key,flag.id,flag.rules)} />
-              
+            {access === "Admin" && (
+  <>
+    <input
+      type="button"
+      value={`${flag.defaultValue}`}
+      onClick={(e) => changeDefaultValue(e, flag.defaultValue, flag.id)}
+      style={{
+        backgroundColor: "#ffb6b9",
+        color: "#fff",
+        border: "none",
+        borderRadius: "12px",
+        padding: "6px 14px",
+        marginRight: "8px",
+        cursor: "pointer",
+        boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+        transition: "transform 0.2s, box-shadow 0.2s",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLInputElement).style.transform = "scale(1.05)";
+        (e.currentTarget as HTMLInputElement).style.boxShadow =
+          "0 6px 12px rgba(0,0,0,0.2)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLInputElement).style.transform = "scale(1)";
+        (e.currentTarget as HTMLInputElement).style.boxShadow =
+          "0 4px 6px rgba(0,0,0,0.1)";
+      }}
+    />
+  </>
+)}
+
+<input
+  type="button"
+  value={`edit`}
+  onClick={(e) => router.push(`/dashboard/${flag.id}/editflag`)}
+  style={{
+    backgroundColor: "#a0c4ff",
+    color: "#fff",
+    border: "none",
+    borderRadius: "12px",
+    padding: "6px 14px",
+    marginRight: "8px",
+    cursor: "pointer",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+    transition: "transform 0.2s, box-shadow 0.2s",
+  }}
+  onMouseEnter={(e) => {
+    (e.currentTarget as HTMLInputElement).style.transform = "scale(1.05)";
+    (e.currentTarget as HTMLInputElement).style.boxShadow =
+      "0 6px 12px rgba(0,0,0,0.2)";
+  }}
+  onMouseLeave={(e) => {
+    (e.currentTarget as HTMLInputElement).style.transform = "scale(1)";
+    (e.currentTarget as HTMLInputElement).style.boxShadow =
+      "0 4px 6px rgba(0,0,0,0.1)";
+  }}
+/>
+
+{access === "Admin" && (
+  <input
+    type="button"
+    value={`delete`}
+    onClick={(e) => handledeletingFlag(flag.id)}
+    style={{
+      backgroundColor: "#ff7b7b",
+      color: "#fff",
+      border: "none",
+      borderRadius: "12px",
+      padding: "6px 14px",
+      marginRight: "8px",
+      cursor: "pointer",
+      boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+      transition: "transform 0.2s, box-shadow 0.2s",
+    }}
+    onMouseEnter={(e) => {
+      (e.currentTarget as HTMLInputElement).style.transform = "scale(1.05)";
+      (e.currentTarget as HTMLInputElement).style.boxShadow =
+        "0 6px 12px rgba(0,0,0,0.2)";
+    }}
+    onMouseLeave={(e) => {
+      (e.currentTarget as HTMLInputElement).style.transform = "scale(1)";
+      (e.currentTarget as HTMLInputElement).style.boxShadow =
+        "0 4px 6px rgba(0,0,0,0.1)";
+    }}
+  />
+)}
+
+<input
+  type="button"
+  value={`evaluate`}
+  onClick={(e) => handleEvaluate(flag.key, flag.id, flag.rules)}
+  style={{
+    backgroundColor: "#caffbf",
+    color: "#333",
+    border: "none",
+    borderRadius: "12px",
+    padding: "6px 14px",
+    cursor: "pointer",
+    boxShadow: "0 4px 6px rgba(0,0,0,0.1)",
+    transition: "transform 0.2s, box-shadow 0.2s",
+  }}
+  onMouseEnter={(e) => {
+    (e.currentTarget as HTMLInputElement).style.transform = "scale(1.05)";
+    (e.currentTarget as HTMLInputElement).style.boxShadow =
+      "0 6px 12px rgba(0,0,0,0.2)";
+  }}
+  onMouseLeave={(e) => {
+    (e.currentTarget as HTMLInputElement).style.transform = "scale(1)";
+    (e.currentTarget as HTMLInputElement).style.boxShadow =
+      "0 4px 6px rgba(0,0,0,0.1)";
+  }}
+/>
+
       
           
          
