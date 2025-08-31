@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useWorkspaceFlags } from '../../../../hook/useWorkspaceflags';
+import { useRouter } from "next/navigation";
 export const newSocket = io('http://localhost:3000', {
       path: '/api/socketio/'
     });
@@ -36,6 +37,7 @@ interface FlagsResponse {
 }
 
 export default function WebSocketDebugPage() {
+      const router = useRouter();
   const [isConnected, setIsConnected] = useState(false);
   const [messages, setMessages] = useState<string[]>([]);
   const [socket, setSocket] = useState<Socket | null>(null);
@@ -104,11 +106,22 @@ async function changeDefaultValue(e: any, defaultValue: boolean,flagID:string){
     });
 
     newSocket.on('flag-updated', (data) => {
-    setFlags((prevFlags) =>
-  prevFlags.map((flag) =>
-    flag.id === data.id ? { ...flag, ...data } : flag
-  )
-);
+    setFlags((prevFlags) => {
+  const exists = prevFlags.some((flag) => flag.id === data.id);
+
+  if (exists) {
+    // Update existing
+    return prevFlags.map((flag) =>
+      flag.id === data.id ? { ...flag, ...data } : flag
+    );
+  } else {
+    // Add new
+    return [...prevFlags, data];
+  }
+});
+
+console.log("flag:",flags)
+console.log("data:",data)
      
     });
 
@@ -175,7 +188,30 @@ return (
      
              
     </div>
+{access ==="Admin"&& <button
+style={{
+backgroundColor: "#007BFF",
+color: "white",
+padding: "0.8rem 1.5rem",
+border: "none",
+borderRadius: "10px",
+cursor: "pointer",
+fontSize: "1.1rem",
+marginTop: "1.5rem",
+width: "100%",
+fontWeight: "bold",
+boxShadow: "0px 4px 10px rgba(0,0,0,0.1)",
+transition: "background 0.3s ease",
+}}
 
+
+onClick={()=>{
+  router.push(`/dashboard/${workspaceId}/createflag`)
+}}
+>
+🚀 Create Flag
+</button>
+}
     {/* Flags */}
     <div
       style={{
@@ -269,7 +305,10 @@ return (
         </div>
       ))}
     </div>
+
+    
   </div>
+  
 );
   
 }
