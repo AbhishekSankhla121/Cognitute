@@ -1,4 +1,1 @@
-*.sh text eol=lf
 * text=auto eol=lf
-**/src/proto/** gitlab-generated
-protos/generated/** gitlab-generated
